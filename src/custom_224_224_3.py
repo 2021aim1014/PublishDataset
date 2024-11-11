@@ -88,7 +88,7 @@ def train_model(model, train_dataset, criterion):
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4, pin_memory=True)
     optimizer = optim.AdamW(model.parameters(), lr=2e-5)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
-    num_epochs = 1
+    num_epochs = 100
 
     for epoch in tqdm(range(num_epochs)):
         model.train()
