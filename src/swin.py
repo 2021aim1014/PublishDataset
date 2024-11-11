@@ -76,11 +76,11 @@ val_size = len(dataset) - train_size  # 20% for validation
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 criterion = nn.MSELoss()
 
-def train_model(model, train_dataset, criterion):
+def train_model(model, train_dataset, criterion, num_epochs = 10):
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4, pin_memory=True)
     optimizer = optim.AdamW(model.parameters(), lr=2e-5)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
-    num_epochs = 1
+    
 
     for epoch in tqdm(range(num_epochs)):
         model.train()
@@ -117,9 +117,11 @@ def validate_model(model, val_loader, criterion):
         
     print(f"Epoch {101}/{101}, Val Loss: {val_loss / len(val_loader):.4f}")
 
+num_epochs = 100
 model = train_model(model, train_dataset, criterion)
 validate_model(model, val_dataset, criterion)
 
+# Check model after image transformation to check whether model is able to generalize or not
 dataset = ImageMultiLabelDataset(csv_file=csv_file, img_dir=img_dir, transform=augmented_transform)
 # Split dataset into training and validation sets
 _, val_dataset = random_split(dataset, [train_size, val_size])
