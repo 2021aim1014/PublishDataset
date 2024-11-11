@@ -118,7 +118,7 @@ def validate_model(model, val_loader, criterion):
     print(f"Epoch {101}/{101}, Val Loss: {val_loss / len(val_loader):.4f}")
 
 num_epochs = 100
-model = train_model(model, train_dataset, criterion)
+model = train_model(model, train_dataset, criterion, num_epochs)
 validate_model(model, val_dataset, criterion)
 
 # Check model after image transformation to check whether model is able to generalize or not
