@@ -33,8 +33,8 @@ print("Size of test dataset: {}".format(len(val_dataset)))
 print("Input test size: {}".format(val_dataset[0][0].size()))
 print("Label test size: {}".format(val_dataset[0][1].size()))
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=0)
-val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False, num_workers=0)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
 
 model_name = 'BaseLineModel_224'
 model = BaselineModel(input_size=image_shape, output_size=4, dropout_p = 0.8)
