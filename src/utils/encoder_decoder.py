@@ -166,6 +166,5 @@ with torch.no_grad():
             feature = bottleneck_features[j].cpu()
             save_path = os.path.join(dst_dir, file_name[j])
             vutils.save_image(feature, save_path)
-        break
             
 print(f"Bottleneck images saved in {dst_dir}.")
