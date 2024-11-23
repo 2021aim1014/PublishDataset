@@ -35,7 +35,7 @@ transform = transforms.Compose([
 
 # Instantiate the dataset and DataLoader
 root = '../../dataset'
-csv_file = f'{root}/meta_data_for_encoder_test.csv'  # Replace with your CSV path
+csv_file = f'{root}/meta_data_for_encoder.csv'  # Replace with your CSV path
 img_dir = f'{root}/removed_background'  # Replace with your image directory
 
 # destination folder for encoded images
