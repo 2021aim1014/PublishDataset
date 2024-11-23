@@ -16,19 +16,20 @@ def write_to_csv(model_name, num_epochs, train_losses, val_losses, train_metrics
     results = {
         "Epoch": list(range(1, num_epochs + 1)),
         "Train Loss": train_losses,
-        "Val Loss": val_losses,
         "Train MSE": train_metrics["MSE"],
         "Train MAE": train_metrics["MAE"],
         "Train R2": train_metrics["R2"],
-        "Val MSE": val_metrics["MSE"],
-        "Val MAE": val_metrics["MAE"],
-        "Val R2": val_metrics["R2"],
     }
     
     # Add parameter counts as additional rows (repeated across all rows for clarity)
     results["Total Params"] = [total_params] * num_epochs
     results["Trainable Params"] = [trainable_params] * num_epochs
     results["Non-trainable Params"] = [non_trainable_params] * num_epochs
+
+    results["Val Loss"] = val_losses * num_epochs
+    results["Val MSE"] = val_metrics["MSE"] * num_epochs
+    results["Val MAE"] = val_metrics["MAE"] * num_epochs
+    results["Val R2"] = val_metrics["R2"] * num_epochs
 
     df = pd.DataFrame(results)
     df.to_csv(f"results/{model_name}.csv", index=False)
@@ -52,7 +53,7 @@ def train_model(model_name, model, train_loader, val_loader, criterion, optimize
 
     # Early stopping parameters
     patience = 5
-    best_val_loss = float('inf')
+    best_train_loss = float('inf')
     epochs_no_improve = 0
 
     # Lists to store metrics
@@ -85,6 +86,7 @@ def train_model(model_name, model, train_loader, val_loader, criterion, optimize
             running_loss += loss.item()
             y_true_train.append(labels)
             y_pred_train.append(outputs)
+            break
 
         # Normalize training loss
         train_loss = running_loss / len(train_loader)
@@ -100,43 +102,9 @@ def train_model(model_name, model, train_loader, val_loader, criterion, optimize
 
         print(f"Epoch [{epoch+1}/{num_epochs}], Training Loss: {train_loss:.4f}, MSE: {mse:.4f}, MAE: {mae:.4f}, R2: {r2:.4f}")
 
-        # Validation phase
-        model.eval()
-        val_loss = 0.0
-        y_true_val, y_pred_val = [], []
-
-        with torch.no_grad():
-            for images, labels in val_loader:
-                images, labels = images.to(device), labels.to(device)
-
-                # Forward pass
-                outputs = model(images)
-
-                # Calculate loss
-                loss = criterion(outputs, labels)
-
-                # Accumulate validation loss and predictions
-                val_loss += loss.item()
-                y_true_val.append(labels)
-                y_pred_val.append(outputs)
-
-        # Normalize validation loss
-        val_loss /= len(val_loader)
-        val_losses.append(val_loss)
-
-        # Calculate validation metrics
-        y_true_val = torch.cat(y_true_val, dim=0)
-        y_pred_val = torch.cat(y_pred_val, dim=0)
-        mse, mae, r2 = calculate_metrics(y_true_val, y_pred_val)
-        val_metrics["MSE"].append(mse)
-        val_metrics["MAE"].append(mae)
-        val_metrics["R2"].append(r2)
-
-        print(f"Epoch [{epoch+1}/{num_epochs}], Validation Loss: {val_loss:.4f}, MSE: {mse:.4f}, MAE: {mae:.4f}, R2: {r2:.4f}")
-
         # Early stopping logic
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
+        if train_loss < best_train_loss:
+            best_train_loss = train_loss
             epochs_no_improve = 0
             # Optionally save the best model
             torch.save(model.state_dict(), "best_model.pth")
@@ -145,8 +113,40 @@ def train_model(model_name, model, train_loader, val_loader, criterion, optimize
 
         if epochs_no_improve == patience:
             print(f"Early stopping triggered. No improvement for {patience} epochs.")
+
+    # Validation phase
+    model.eval()
+    val_loss = 0.0
+    y_true_val, y_pred_val = [], []
+
+    with torch.no_grad():
+        for images, labels in val_loader:
+            images, labels = images.to(device), labels.to(device)
+
+            # Forward pass
+            outputs = model(images)
+
+            # Calculate loss
+            loss = criterion(outputs, labels)
+
+            # Accumulate validation loss and predictions
+            val_loss += loss.item()
+            y_true_val.append(labels)
+            y_pred_val.append(outputs)
             break
 
+    # Normalize validation loss
+    val_loss /= len(val_loader)
+    val_losses.append(val_loss)
+
+    # Calculate validation metrics
+    y_true_val = torch.cat(y_true_val, dim=0)
+    y_pred_val = torch.cat(y_pred_val, dim=0)
+    mse, mae, r2 = calculate_metrics(y_true_val, y_pred_val)
+    val_metrics["MSE"].append(mse)
+    val_metrics["MAE"].append(mae)
+    val_metrics["R2"].append(r2)
+
+    print(f"Epoch [{epoch+1}/{num_epochs}], Validation Loss: {val_loss:.4f}, MSE: {mse:.4f}, MAE: {mae:.4f}, R2: {r2:.4f}")
 
     write_to_csv(model_name, num_epochs, train_losses, val_losses, train_metrics, val_metrics, total_params, trainable_params, non_trainable_params)
-
