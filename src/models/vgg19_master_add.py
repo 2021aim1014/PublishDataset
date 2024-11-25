@@ -70,7 +70,7 @@ class VGG19Master(nn.Module):
 
         x = self.conv_block5(x)
         x = (x + vgg_block5_out)/2
-        print(x.shape)
+        # print(x.shape)
         # Fully connected layers
         x = self.flatten(x)
         x = self.fc1(x)
