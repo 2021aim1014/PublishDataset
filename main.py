@@ -36,8 +36,11 @@ print("Label test size: {}".format(val_dataset[0][1].size()))
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
 
-model_name = 'BaseLineModel_224'
-model = BaselineModel(input_size=image_shape, output_size=4, dropout_p = 0.8)
+# model_name = 'BaseLineModel_224'
+# model = BaselineModel(input_size=image_shape, output_size=4, dropout_p = 0.8)
+
+# model_name = 'VGG19_finetune'
+# model = VGG19(input_size=(3, 224, 224), output_size=4, finetune=True)
 
 # Loss function and optimizer
 criterion = nn.MSELoss()  # For regression (use BCEWithLogitsLoss for multi-label classification)
