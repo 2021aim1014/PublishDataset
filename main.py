@@ -66,7 +66,7 @@ train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False, num_workers=0)
 
 model_name = 'VGG19_master_backbone'
-model = VGG19_backbone(img_shape=(3, 2300, 1800), output_size=4)
+model = VGG19_backbone(input_size=(3, 2300, 1800), output_size=4)
 
 # Loss function and optimizer
 criterion = nn.MSELoss()  # For regression (use BCEWithLogitsLoss for multi-label classification)
