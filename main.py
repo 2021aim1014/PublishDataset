@@ -11,6 +11,9 @@ from src.plot import show_image_grid
 from src.models.baseline_model import BaselineModel
 from src.models.vgg19 import VGG19
 from src.train import train_model
+from src.models.vgg19_master_add import VGG19Master as VGG19Master_ADD
+from src.models.vgg19_master_concat import VGG19Master as VGG19Master_CONCAT
+from src.models.vgg19_backbone import VGG19_backbone
 
 # original_image_shape = (3, 224, 224)
 # image_shape = (3, 1800, 2300)
