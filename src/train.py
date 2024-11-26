@@ -149,4 +149,8 @@ def train_model(model_name, model, train_loader, val_loader, criterion, optimize
 
     print(f"Epoch [{epoch+1}/{num_epochs}], Validation Loss: {val_loss:.4f}, MSE: {mse:.4f}, MAE: {mae:.4f}, R2: {r2:.4f}")
 
+    # Save the model's state dictionary
+    torch.save(model.state_dict(), f"saved_models/{model_name}.pth")
+    print(f'Model saved at saved_models/{model_name}.pth')
+
     write_to_csv(model_name, num_epochs, train_losses, val_losses, train_metrics, val_metrics, total_params, trainable_params, non_trainable_params)
