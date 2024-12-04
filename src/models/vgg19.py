@@ -13,8 +13,10 @@ class VGG19(nn.Module):
         for param in model.features.parameters():
             param.requires_grad = not finetune
 
-        # Modify the classifier
-        model.classifier[6] = nn.Linear(4096, output_size)  # Output layer with the desired output size
+        # Modify the classifier: to reduce the number of params 
+        model.classifier[0] = nn.Linear(25088, 2048)  # Output layer with the desired output size
+        model.classifier[3] = nn.Linear(2048, 2048)
+        model.classifier[6] = nn.Linear(2048, output_size)
         self.model = model
 
     def forward(self, x):
