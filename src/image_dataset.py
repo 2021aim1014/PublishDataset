@@ -26,8 +26,9 @@ class ImageDataset(Dataset):
         return image, labels
     
 if __name__ == "__main__":
-    # Transformations (optional)
     transform = transforms.Compose([
+        transforms.CenterCrop(400),  # Start with a central crop (slightly larger than 224x224)
+        transforms.RandomCrop(224),  # Randomly crop a 224x224 patch
         transforms.ToTensor(),  # Convert image to PyTorch tensor
     ])
     
